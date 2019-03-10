@@ -85,7 +85,23 @@ public interface Extractor {
     List<DatatypeProperty> dpsOfCls(OntClass ontClass, OntModel ontModel, double percent);
 
 
-    //TODO:返回属性的定义域和属性的值域的方法有需要再定义
+    /**
+     * 定义属性的定义域为:拥有该属性的类的集合
+     * @param prop
+     * @param ontModel
+     * @param percent
+     * @return
+     */
+    List<OntClass> domainOfProp(OntProperty prop, OntModel ontModel, double percent);
 
+
+    /**
+     * 定义对象属性(数据类型属性值域为字面量)的值域为:该OP的值实例所属的类集合
+     * @param op
+     * @param ontModel
+     * @param percent
+     * @return
+     */
+    List<OntClass> rangeOfOp(ObjectProperty op, OntModel ontModel, double percent);
 
 }

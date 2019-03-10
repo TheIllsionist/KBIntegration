@@ -30,14 +30,14 @@ public class VDocTFUtil {
      * @return
      * @throws Exception
      */
-    public Map<String,Double> TFOfClass(OntModel model, OntClass cls, Map<String,Double> localConf, Map<String,Double> neiborConf) throws Exception{
+    public Map<String,Double> tfOfClass(OntModel model, OntClass cls, Map<String,Double> localConf, Map<String,Double> neiborConf) throws Exception{
         if(cls == null)
             throw new NullPointerException();
         Map<String,Double> localTF = localTFMapOf(cls,localConf);   //得到本地TF信息
         for(Map.Entry<String,Double> entry : neiborConf.entrySet()){
             switch (entry.getKey()){
                 case "supClass":{    //类的父类作为邻居信息
-                    List<OntClass> supClses = extractor.supClassesOf(cls);  //所有直接父类
+                    List<OntClass> supClses = extractor.subClassesOf(cls);  //所有直接父类
                     for(OntClass tSup : supClses){
                         if(tSup.isAnon() || !tSup.isClass())
                             continue;
@@ -73,14 +73,43 @@ public class VDocTFUtil {
 
 
     /**
-     * 计算属性的TF信息
+     * 计算属性的TF信息,包括本地信息和周边信息
+     * @param model
+     * @param prop
+     * @param localConf
+     * @param neiborConf
+     * @return
+     * @throws Exception
      */
-//    public Map<String,Double> TFOfProp(OntModel model,OntProperty prop,Map<String,Double> localConf,Map<String,Double> neiborConf) throws Exception{
-//        if(prop == null)
-//            throw new NullPointerException();
-//        Map<String,Double> localTF = localTFMapOf(prop,localConf);
-//
-//    }
+    public Map<String,Double> tfOfProp(OntModel model,OntProperty prop,Map<String,Double> localConf,Map<String,Double> neiborConf) throws Exception{
+        if(prop == null)
+            throw new NullPointerException();
+        Map<String,Double> localTF = localTFMapOf(prop,localConf);
+        for(Map.Entry<String,Double> entry : neiborConf.entrySet()){
+            switch (entry.getKey()){
+                case "domain":{
+                    List<OntClass> domains = extractor.domainOfProp(prop,model,0.75);
+                    for(OntClass cls : domains){
+                        if(cls.isAnon() || !cls.isClass())
+                            continue;
+                        Map<String,Double> neiMap = localTFMapOf(cls,localConf);
+                        mergeLocMapWithNeiMap(localTF,neiMap,entry.getValue());
+                    }
+                }break;
+                case "range":{
+                    List<OntClass> ranges = extractor.rangeOfOp(prop.asObjectProperty(),model,0.75);
+                    for(OntClass cls : ranges){
+                        if(cls.isAnon() || !cls.isClass())
+                            continue;
+                        Map<String,Double> neiMap = localTFMapOf(cls,localConf);
+                        mergeLocMapWithNeiMap(localTF,neiMap,entry.getValue());
+                    }
+                }break;
+            }
+        }
+        normalization(localTF); //计算词频
+        return localTF;
+    }
 
 
     /**

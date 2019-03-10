@@ -1,10 +1,10 @@
 package extractor;
 
 import org.apache.jena.ontology.*;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.OWL2;
+import org.apache.jena.vocabulary.RDF;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -118,7 +118,6 @@ public class FileExtractor implements Extractor{
     }
 
 
-
     @Override
     public List<DatatypeProperty> dpsOfCls(OntClass ontClass, OntModel ontModel, double percent) {
         List<OntProperty> props = propsOfCls(ontClass,ontModel,percent);
@@ -129,6 +128,55 @@ public class FileExtractor implements Extractor{
             }
         }
         return dps;
+    }
+
+    @Override
+    public List<OntClass> domainOfProp(OntProperty prop, OntModel ontModel, double percent) {
+        List<OntClass> clses = new ArrayList<>();
+        ExtendedIterator<OntClass> clsIter = ontModel.listClasses();
+        while(clsIter.hasNext()){  //迭代知识库中的所有类
+            OntClass tCls = clsIter.next();
+            List<OntProperty> props = propsOfCls(tCls,ontModel,percent); //计算该类拥有的属性
+            if(props.contains(prop)){ //如果该类拥有这个属性,则这个属性的定义域包括该类
+                clses.add(tCls);
+            }
+        }
+        return clses;
+    }
+
+    @Override
+    public List<OntClass> rangeOfOp(ObjectProperty op, OntModel ontModel, double percent) {
+        Set<OntClass> clses = new HashSet<>();
+        SimpleSelector selector = new SimpleSelector(null,op, (Object)null){
+            @Override
+            public boolean test(Statement s){
+                String sUri = s.getPredicate().getURI();
+                return this.predicate.getURI().equals(sUri) ? true :false;
+            }
+            @Override
+            public boolean selects(Statement s){
+                String sUri = s.getPredicate().getURI();
+                return this.predicate.getURI().equals(sUri) ? true : false;
+            }
+        };
+        StmtIterator iterator = ontModel.listStatements(selector);
+        while(iterator.hasNext()){
+            Statement statement = iterator.nextStatement();
+            RDFNode node = statement.getObject();
+            if(node.isResource() && node.asResource().hasProperty(RDF.type,OWL2.NamedIndividual)){
+                Individual ins = ontModel.getIndividual(node.asResource().getURI());
+                Iterator<OntClass> clsIter = ins.listOntClasses(true);
+                while(clsIter.hasNext()){
+                    clses.add(clsIter.next());
+                }
+            }
+        }
+        List<OntClass> res = new ArrayList<>();
+        Iterator<OntClass> clsIter = clses.iterator();
+        while(clsIter.hasNext()){
+            res.add(clsIter.next());
+        }
+        return res;
     }
 
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 @Component
 public class NameSimilarity implements Similarity{
 
-    private Map<StringMetric,Double> metricConf = null;
+    private Map<StringMetric,Double> metricConf = null;  //使用哪些相似度计算方法,每种方法权重是多少
 
     @Autowired
     private Extractor extractor;
