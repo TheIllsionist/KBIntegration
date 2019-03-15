@@ -1,6 +1,6 @@
 package utils;
 
-import extractor.Extractor;
+import parser.Parser;
 import org.apache.jena.ontology.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class VDocTFUtil {
     @Autowired
     private Tokenizer tokenizer;  //分词工具
     @Autowired
-    private Extractor extractor;  //信息抽取器
+    private Parser parser;  //信息抽取器
 
 
     /**
@@ -37,7 +37,7 @@ public class VDocTFUtil {
         for(Map.Entry<String,Double> entry : neiborConf.entrySet()){
             switch (entry.getKey()){
                 case "supClass":{    //类的父类作为邻居信息
-                    List<OntClass> supClses = extractor.subClassesOf(cls);  //所有直接父类
+                    List<OntClass> supClses = parser.subClassesOf(cls);  //所有直接父类
                     for(OntClass tSup : supClses){
                         if(tSup.isAnon() || !tSup.isClass())
                             continue;
@@ -46,7 +46,7 @@ public class VDocTFUtil {
                     }
                 }break;
                 case "subClass":{   //类的子类作为邻居信息
-                    List<OntClass> subClses = extractor.subClassesOf(cls);  //所有直接子类
+                    List<OntClass> subClses = parser.subClassesOf(cls);  //所有直接子类
                     for(OntClass tSub : subClses){
                         if(tSub.isAnon() || !tSub.isClass())
                             continue;
@@ -55,7 +55,7 @@ public class VDocTFUtil {
                     }
                 }break;
                 case "property":{  //类所"拥有"的属性作为邻居信息
-                    List<OntProperty> props = extractor.propsOfCls(cls, model, 0.75);
+                    List<OntProperty> props = parser.propsOfCls(cls, model, 0.75);
                     for (OntProperty prop : props) {
                         if(prop.isAnon() || (!prop.isDatatypeProperty() && !prop.isObjectProperty())){
                             continue;
@@ -88,7 +88,7 @@ public class VDocTFUtil {
         for(Map.Entry<String,Double> entry : neiborConf.entrySet()){
             switch (entry.getKey()){
                 case "domain":{
-                    List<OntClass> domains = extractor.domainOfProp(prop,model,0.75);
+                    List<OntClass> domains = parser.domainOfProp(prop,model,0.75);
                     for(OntClass cls : domains){
                         if(cls.isAnon() || !cls.isClass())
                             continue;
@@ -97,7 +97,7 @@ public class VDocTFUtil {
                     }
                 }break;
                 case "range":{
-                    List<OntClass> ranges = extractor.rangeOfOp(prop.asObjectProperty(),model,0.75);
+                    List<OntClass> ranges = parser.rangeOfOp(prop.asObjectProperty(),model,0.75);
                     for(OntClass cls : ranges){
                         if(cls.isAnon() || !cls.isClass())
                             continue;
@@ -127,14 +127,14 @@ public class VDocTFUtil {
         for (Map.Entry<String,Double> entry : localConf.entrySet()) {
             switch(entry.getKey()){
                 case "LABEL":{  //使用rdfs:label信息
-                    List<String> labels = extractor.labelsOf(res);  //列出该实体的所有可读名称
+                    List<String> labels = parser.labelsOf(res);  //列出该实体的所有可读名称
                     for(String label : labels){
                         List<String> tokens = tokenizer.tokensOfStr(label);  //tokens是允许有重复的
                         addTokensToMap(tokens,tfMap,entry.getValue());
                     }
                 }break;
                 case "COMMENT":{  //使用rdfs:comment信息
-                    List<String> comments = extractor.commentsOf(res);  //列出该实体的所有释义描述
+                    List<String> comments = parser.commentsOf(res);  //列出该实体的所有释义描述
                     for(String comment : comments){
                         List<String> tokens = tokenizer.tokensOfStr(comment);  //(分词去频繁词)tokens是允许有重复的
                         addTokensToMap(tokens,tfMap,entry.getValue());

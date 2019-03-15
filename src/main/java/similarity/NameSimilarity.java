@@ -1,6 +1,6 @@
 package similarity;
 
-import extractor.Extractor;
+import parser.Parser;
 import org.apache.jena.ontology.OntResource;
 import org.simmetrics.StringMetric;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +11,16 @@ import java.util.Map;
 /**
  * Created by The Illsionist on 2019/3/9.
  * 名称相似度计算器
+ * 计算两个实体名称之间的相似度,如果实体有多个名称,选择多个相似度之中的最大值
  */
 @Component
 public class NameSimilarity implements Similarity{
 
+    //TODO:目前的设计是只支持相似度值的加权组合,后面要考虑是否需要支持投票表决
     private Map<StringMetric,Double> metricConf = null;  //使用哪些相似度计算方法,每种方法权重是多少
 
     @Autowired
-    private Extractor extractor;
+    private Parser parser;
 
 
     /**
@@ -41,8 +43,8 @@ public class NameSimilarity implements Similarity{
         if(metricConf == null || metricConf.size() == 0){
             throw new Exception("ERROR : 没有为实体名称相似度计算设置度量方式和权重配置 ");
         }
-        List<String> names1 = extractor.labelsOf(res1);
-        List<String> names2 = extractor.labelsOf(res2);
+        List<String> names1 = parser.labelsOf(res1);
+        List<String> names2 = parser.labelsOf(res2);
         double maxSim = 0.0;
         for(String name1 : names1){
             for(String name2 : names2){

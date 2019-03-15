@@ -1,4 +1,4 @@
-package extractor;
+package parser;
 
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.*;
@@ -13,8 +13,8 @@ import java.util.*;
  * Created by The Illsionist on 2019/3/8.
  * 此类中的方法都是无状态方法
  */
-@Component("extractor")
-public class FileExtractor implements Extractor{
+@Component("parser")
+public class FileParser implements Parser {
 
     @Override
     public List<String> labelsOf(OntResource resource) {

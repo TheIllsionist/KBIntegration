@@ -1,13 +1,12 @@
-package extractor;
+package parser;
 
 import org.apache.jena.ontology.*;
-
 import java.util.List;
 
 /**
  * Created by The Illsionist on 2019/3/8.
  */
-public interface Extractor {
+public interface Parser {
 
     /**
      * 返回一个本体资源的所有可读名称

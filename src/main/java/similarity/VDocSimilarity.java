@@ -4,7 +4,6 @@ import org.apache.jena.ontology.*;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import utils.VDocTFUtil;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,6 +12,7 @@ import java.util.Set;
 /**
  * Created by The Illsionist on 2019/3/9.
  * 虚拟文档相似度计算器
+ * TODO:如果主要依靠区分性属性值进行相似度计算,那么虚拟文档相似度计算器可能用不上,当前计算器未经过测试
  */
 public class VDocSimilarity implements Similarity{
 
