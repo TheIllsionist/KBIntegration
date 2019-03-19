@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.jar.Attributes;
 
 /**
  * Created by The Illsionist on 2019/3/9.
@@ -16,12 +18,15 @@ import java.util.Map;
 @Component
 public class NameSimilarity implements Similarity{
 
-    //TODO:目前的设计是只支持相似度值的加权组合,后面要考虑是否需要支持投票表决
+    /**
+     * 1.在加权组合模式下,该配置是相似度以及权重配置,要求每种相似度的权重加和为1
+     * 2.在投票表决模式下,该配置是每种相似度的提取阈值,没有加和要求
+     */
     private Map<StringMetric,Double> metricConf = null;  //使用哪些相似度计算方法,每种方法权重是多少
+    private int votes = 0; //投票表决模式下的票数
 
     @Autowired
     private Parser parser;
-
 
     /**
      * 设置名称相似度计算配置,用哪种度量以及这种度量的占比
@@ -73,5 +78,11 @@ public class NameSimilarity implements Similarity{
         return res;
     }
 
+    /**
+     * 利用内部类实现投票表决
+     */
+    static final class VoteNameSimilarity extends NameSimilarity{
+
+    }
 
 }

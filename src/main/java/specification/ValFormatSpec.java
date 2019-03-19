@@ -22,7 +22,42 @@ import java.util.Map;
  * 四.规范基于正则表达式实现
  */
 public class ValFormatSpec {
-    private Map<String,Integer> formatMap;  //格式(正则表达式,唯一标识)
-    private Map<Integer,Map<String,Double>> stdMap; //单位标准化(唯一标识,<单位,转换因子>)
+
+    private Map<String,Integer> formatMap = null;  //区分性属性取值格式(正则表达式,唯一标识)
+    private Map<Integer,Map<String,Double>> stdMap = null; //单位标准化(唯一标识,<单位,转换因子>)
+
+
+    public void setFormatMap(Map<String,Integer> formatMap){
+        this.formatMap = formatMap;
+    }
+
+    public void setStdMap(Map<Integer,Map<String,Double>> stdMap){
+        this.stdMap = stdMap;
+    }
+
+
+    /**
+     * 给定属性值,返回当前规范中匹配该属性值的取值格式
+     * 若无格式,抛出异常
+     * @param value
+     * @return
+     * @throws Exception
+     */
+    public String formatOfVal(String value) throws Exception{
+        if(value == null)
+            throw new Exception("    Error : DP属性取值出现null值!");
+        if(value.matches("\\s*"))
+            throw new Exception("    Error : DP属性取值出现空串!");
+        for(Map.Entry<String,Integer> entry : formatMap.entrySet()){
+            if(value.matches(entry.getKey()))
+                return entry.getKey();
+        }
+        throw new Exception("FormatMis : 没有匹配属性值 \"" + value + "\"的取值格式!");
+    }
+
+    public int formatIDOfVal(String value) throws Exception{
+        String format = formatOfVal(value);
+        return formatMap.get(format);
+    }
 
 }

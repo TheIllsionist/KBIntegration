@@ -6,14 +6,13 @@ import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 import org.springframework.stereotype.Component;
-
 import java.util.*;
 
 /**
  * Created by The Illsionist on 2019/3/8.
  * 此类中的方法都是无状态方法
  */
-@Component("parser")
+@Component("fileParser")
 public class FileParser implements Parser {
 
     @Override
