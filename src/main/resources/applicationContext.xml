@@ -4,6 +4,79 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- 组件扫描 -->
-    <context:component-scan base-package="matcher,parser,similarity,specification,tokenizer,utils"/>
+
+
+    <!-- <context:component-scan base-package="matcher,parser,similarity,specification,tokenizer,utils"/> -->
+
+    <!-- DP属性值取值格式规范 -->
+    <bean class="specification.ValFormatSpec" id="formatSpec" scope="singleton">
+        <property name="formatMap"><!-- 取值格式 -->
+            <map>
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;毫米|厘米|分米|米|十米|百米|千米|mm|cm|dm|m|dam|hm|km|公里|公尺|海里|浬|哩|英里|海浬|海哩|尺|里|丈|寸|呎|英尺|吋|英寸|in|ft|mi|nmi))" value="1"/> <!-- 长度单位 -->
+                <entry key="\d+\.?\d*呎\d+\.?\d*吋" value="2"/>  <!-- 长度组合 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;克|公克|千克|吨|公吨|长吨|短吨|两|钱|斤|公斤|磅|盎司|g|kg|t|st|lt|lb|oz))" value="3"/>       <!-- 重量 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;米/秒|千米/秒|千米/时|公里/时|公里/秒|马赫|英里/时|英寸/秒|海里/时|节|m/s|km/s|km/h|mach|mile/h|in/s))" value="4"/>  <!-- 速度 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;发/分))" value="5"/> <!-- 射速 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;发))" value="6"/>    <!-- 容弹量 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;人|名))" value="7"/>    <!-- 编制 -->
+                <entry key="(?&lt;result&gt;^[a-zA-Z0-9_-]{1,8}$)" value="8"/>         <!-- 由字母,数字,中划线,下划线组成的串 -->
+                <entry key="(?&lt;result&gt;^[\u4e00-\u9fa5]{1,8}$)" value="9"/>       <!-- 由中文字符组成的串 -->
+                <entry key="(?&lt;result&gt;(?&lt;year&gt;\d{4})年((?&lt;month&gt;\d{1,2})月)?((?&lt;day&gt;\d{1,2})日)?)" value="10"/>  <!-- 日期,初步测试 -->
+                <entry key="(?&lt;result&gt;(?&lt;sYear&gt;\d{4})年((?&lt;sMonth&gt;\d{1,2})月)?((?&lt;sDay&gt;\d{1,2})日)?-(?&lt;eYear&gt;\d{4})年((?&lt;eMonth&gt;\d{1,2})月)?((?&lt;eDay&gt;\d{1,2})日)?)" value="11"/>  <!-- 日期范围 -->
+            </map>
+        </property>
+        <property name="combineRel"> <!--a取值格式是由哪种取值格式组成的-->
+            <map>
+                <entry key="2" value="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;毫米|厘米|分米|米|十米|百米|千米|mm|cm|dm|m|dam|hm|km|公里|公尺|海里|浬|哩|英里|海浬|海哩|尺|里|丈|寸|呎|英尺|吋|英寸|in|ft|mi|nmi))"/> <!--格式2是由哪个基本组合来的-->
+            </map>
+        </property>
+        <property name="stdMap"> <!-- 单位标准化字典 -->
+            <map>
+                <entry key="1"><!-- 长度,标准单位为"米" -->
+                    <map>
+                        <entry key="毫米|mm" value="0.001"/>
+                        <entry key="厘米|cm" value="0.01"/>
+                        <entry key="分米|dm" value="0.1"/>
+                        <entry key="米|公尺|m" value="1.0"/>
+                        <entry key="十米|dam" value="10.0"/>
+                        <entry key="百米|hm" value="100.0"/>
+                        <entry key="千米|公里|km" value="1000.0"/>
+                        <entry key="海里|浬|海浬|海哩|nmi" value="1852.0"/>
+                        <entry key="哩|英里|mi" value="1609.3"/>
+                        <entry key="尺" value="0.3333333"/>
+                        <entry key="里" value="500.0"/>
+                        <entry key="丈" value="3.3333333"/>
+                        <entry key="寸" value="0.0333333"/>
+                        <entry key="呎|英尺|ft" value="0.3048"/>
+                        <entry key="吋|英寸|in" value="0.0254"/>
+                    </map>
+                </entry>
+                <entry key="3"><!-- 重量,标准单位为"千克" -->
+                    <map>
+                        <entry key="克|公克|g" value="0.001"/>
+                        <entry key="千克|公斤|kg" value="1.0"/>
+                        <entry key="吨|公吨|t" value="1000.0"/>
+                        <entry key="长吨|lt" value="1016.0469088"/>
+                        <entry key="短吨|st" value="907.18474"/>
+                        <entry key="斤" value="0.5"/>
+                        <entry key="磅|lb" value="0.4535924"/>
+                        <entry key="盎司|oz" value="0.0283495"/>
+                        <entry key="两" value="0.05"/>
+                        <entry key="钱" value="0.005"/>
+                    </map>
+                </entry>
+                <entry key="4"><!-- 速度,标准单位为"千米/时" -->
+                    <map>
+                        <entry key="米/秒|m/s" value="3.6"/>
+                        <entry key="千米/秒|公里/秒|km/s" value="3600.0"/>
+                        <entry key="千米/时|公里/时|km/h" value="1.0"/>
+                        <entry key="马赫|mach" value="1225.08"/>
+                        <entry key="英里/时|mile/h" value="1.609344"/>
+                        <entry key="英寸/秒|in/s" value="0.09144"/>
+                        <entry key="海里/时|节" value="1.852"/>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
 </beans>

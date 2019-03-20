@@ -1,6 +1,10 @@
 package specification;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by The Illsionist on 2019/3/15.
@@ -23,9 +27,9 @@ import java.util.Map;
  */
 public class ValFormatSpec {
 
-    private Map<String,Integer> formatMap = null;  //区分性属性取值格式(正则表达式,唯一标识)
-    private Map<Integer,Map<String,Double>> stdMap = null; //单位标准化(唯一标识,<单位,转换因子>)
-
+    private Map<String,Integer> formatMap = null;  //取值格式(格式,标识)
+    private Map<Integer,String> combineRel = null;  //对于取值格式中的组合格式,需注明组合关系
+    private Map<Integer,Map<String,Double>> stdMap = null; //单位标准化(标识,<单位,转换因子>)
 
     public void setFormatMap(Map<String,Integer> formatMap){
         this.formatMap = formatMap;
@@ -35,6 +39,21 @@ public class ValFormatSpec {
         this.stdMap = stdMap;
     }
 
+    public void setCombineRel(Map<Integer,String> combineRel){
+        this.combineRel = combineRel;
+    }
+
+    /**
+     * 属性值检查,遇到脏数据(null,空串等)抛异常
+     * @param value
+     * @throws Exception
+     */
+    private void isValLegal(String value) throws Exception{
+        if(value == null)
+            throw new Exception("    Error : DP属性取值出现null值!");
+        if(value.matches("\\s*"))
+            throw new Exception("    Error : DP属性取值出现空串!");
+    }
 
     /**
      * 给定属性值,返回当前规范中匹配该属性值的取值格式
@@ -43,21 +62,103 @@ public class ValFormatSpec {
      * @return
      * @throws Exception
      */
-    public String formatOfVal(String value) throws Exception{
-        if(value == null)
-            throw new Exception("    Error : DP属性取值出现null值!");
-        if(value.matches("\\s*"))
-            throw new Exception("    Error : DP属性取值出现空串!");
-        for(Map.Entry<String,Integer> entry : formatMap.entrySet()){
+    private String formatOfVal(String value) throws Exception{
+        isValLegal(value);    //属性值合法性检查
+        for(Map.Entry<String,Integer> entry : formatMap.entrySet()){ //是否匹配基本格式
+            if(value.matches(entry.getKey()))
+                return entry.getKey();
+        }
+        for(Map.Entry<String,Integer> entry : formatMap.entrySet()){  //是否匹配组合格式
             if(value.matches(entry.getKey()))
                 return entry.getKey();
         }
         throw new Exception("FormatMis : 没有匹配属性值 \"" + value + "\"的取值格式!");
     }
 
-    public int formatIDOfVal(String value) throws Exception{
-        String format = formatOfVal(value);
-        return formatMap.get(format);
+    /**
+     * 将一个日期型值的年,月,日依此提取出来
+     * @param value
+     * @return
+     */
+    private int[] datesOf(String value,Pattern pattern){
+        Matcher matcher = pattern.matcher(value);
+        matcher.find();
+        int[] dates = new int[]{-1,-1,-1};
+        dates[0] = Integer.valueOf(matcher.group("year"));
+        try{
+            dates[1] = Integer.valueOf(matcher.group("month"));
+            dates[2] = Integer.valueOf(matcher.group("day"));
+        }catch (Exception e){
+        }
+        return dates;
+    }
+
+    /**
+     * 将一个带单位数值对应的标准单位值计算出来
+     * @param value
+     * @param pattern
+     * @return
+     */
+    private double stdValOf(String value,int basicId,Pattern pattern){
+        Matcher matcher = pattern.matcher(value);
+        if(stdMap.get(basicId) == null){
+            matcher.find();
+            return Double.valueOf(matcher.group("num"));
+        }
+        List<String> matches = new ArrayList<>(); //先用基本格式提取所有匹配子串(大多数情况下就是原串)
+        int sPos = 0;
+        do{
+            if(!matcher.find(sPos))
+                break;
+            String tR = matcher.group("result");
+            matches.add(tR);
+            sPos = matcher.end("result");
+        }while(sPos < value.length());
+        double stdNum = 0.0;
+        for(String str : matches){
+            matcher = pattern.matcher(str);
+            matcher.find();
+            double num = Double.valueOf(matcher.group("num"));
+            String unit = matcher.group("unit");
+            stdNum += num * getFactor(basicId,unit);
+        }
+        return stdNum;
+    }
+
+    private double getFactor(int basicId,String unit){
+        Map<String,Double> map = stdMap.get(basicId);
+        for(Map.Entry<String,Double> entry : map.entrySet()){
+            if(unit.matches(entry.getKey()))
+                return entry.getValue();
+        }
+        return 1.0;  //找不到对应单位的转换因子,返回原值
+    }
+
+    /**
+     * 工厂方法,根据值格式,构造该值对应的格式化值对象
+     * 若值不合法或者没有该值对应的格式,抛出异常
+     * @param val
+     * @return
+     * @throws Exception
+     */
+    public FormatVal formatVal(String val) throws Exception{
+        String regex = formatOfVal(val);
+        int id = formatMap.get(regex);
+        String basicRegex = combineRel.containsKey(id) ? combineRel.get(id) : regex;  //若该值的格式为组合格式,找到它对应的基本格式
+        int basicId = formatMap.get(basicRegex);
+        FormatVal formatVal = new FormatVal(val);
+        formatVal.setFormatID(basicId);  //一定是基本格式ID
+        Pattern pattern = Pattern.compile(basicRegex);
+        if(basicId == 10){    //日期型
+            formatVal.setDates(datesOf(val,pattern));
+        }else if(basicId >= 1 && basicId <= 7){  //带单位的数值
+            formatVal.setStdNum(stdValOf(val,basicId,pattern));
+        }else if(basicId == 8){ //字母,数字,中划线和下划线组成的串
+
+        }else if(basicId == 9){ //中文文本串
+
+        }
+        return formatVal;
     }
 
 }
