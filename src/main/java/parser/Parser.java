@@ -2,6 +2,7 @@ package parser;
 
 import org.apache.jena.ontology.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by The Illsionist on 2019/3/8.
@@ -102,5 +103,13 @@ public interface Parser {
      * @return
      */
     List<OntClass> rangeOfOp(ObjectProperty op, OntModel ontModel, double percent);
+
+
+    /**
+     * 返回一个实例所拥有的所有数据类型属性及其值
+     * @param individual
+     * @return
+     */
+    Map<DatatypeProperty,String> dpValsOf(Individual individual);
 
 }

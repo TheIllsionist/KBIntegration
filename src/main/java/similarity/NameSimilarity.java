@@ -12,15 +12,16 @@ import java.util.jar.Attributes;
 
 /**
  * Created by The Illsionist on 2019/3/9.
- * 名称相似度计算器
- * 计算两个实体名称之间的相似度,如果实体有多个名称,选择多个相似度之中的最大值
+ * 名称相似度计算器,有加权相似度计算模式和投票表决模式
+ * 1.加权模式:计算多种字符串相似度,最后加权求和作为名称相似度
+ * 2.投票表决模式：给定多种字符串相似度值和阈值,最后满足投票条件的认为匹配
  */
 @Component
 public class NameSimilarity implements Similarity{
 
     /**
-     * 1.在加权组合模式下,该配置是相似度以及权重配置,要求每种相似度的权重加和为1
-     * 2.在投票表决模式下,该配置是每种相似度的提取阈值,没有加和要求
+     * 1.在加权组合模式下,该配置是相似度以及权重配置,要求各种相似度的权重加和必须为1
+     * 2.在投票表决模式下,该配置是每种相似度的提取阈值,各种相似度的阈值加和没有阈值要求
      */
     private Map<StringMetric,Double> metricConf = null;  //使用哪些相似度计算方法,每种方法权重是多少
     private int votes = 0; //投票表决模式下的票数
@@ -29,7 +30,8 @@ public class NameSimilarity implements Similarity{
     private Parser parser;
 
     /**
-     * 设置名称相似度计算配置,用哪种度量以及这种度量的占比
+     * 1.加权模式下是设置相似度及权重配置
+     * 2.投票模式下是设置相似度及阈值
      * @param metricConf
      */
     public void setMetricConf(Map<StringMetric,Double> metricConf){
@@ -70,7 +72,7 @@ public class NameSimilarity implements Similarity{
      * @param name2
      * @return
      */
-    private double simOfName(String name1,String name2){
+    protected double simOfName(String name1,String name2){
         double res = 0.0;
         for(Map.Entry<StringMetric,Double> entry : metricConf.entrySet()){
             res += entry.getKey().compare(name1,name2) * entry.getValue();

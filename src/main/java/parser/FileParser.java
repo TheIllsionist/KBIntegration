@@ -3,6 +3,7 @@ package parser;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,11 @@ import java.util.*;
 @Component("fileParser")
 public class FileParser implements Parser {
 
+    /**
+     * 返回一个实体的所有可读名称
+     * @param resource
+     * @return
+     */
     @Override
     public List<String> labelsOf(OntResource resource) {
         Iterator<RDFNode> lbNodes = resource.listLabels(null);  //不加任何语言标记限制
@@ -25,6 +31,11 @@ public class FileParser implements Parser {
         return labels;
     }
 
+    /**
+     * 返回一个实体的所有描述文本
+     * @param resource
+     * @return
+     */
     @Override
     public List<String> commentsOf(OntResource resource) {
         Iterator<RDFNode> cmNodes = resource.listComments(null);  //不加任何语言标记限制
@@ -35,6 +46,11 @@ public class FileParser implements Parser {
         return comments;
     }
 
+    /**
+     * 返回一个类的所有直接父类
+     * @param ontClass
+     * @return
+     */
     @Override
     public List<OntClass> supClassesOf(OntClass ontClass) {
         Iterator<OntClass> iter = ontClass.listSuperClasses(true); //cls的直接父类
@@ -45,7 +61,11 @@ public class FileParser implements Parser {
         return supClasses;
     }
 
-
+    /**
+     * 返回一个类的所有直接子类
+     * @param ontClass
+     * @return
+     */
     @Override
     public List<OntClass> subClassesOf(OntClass ontClass) {
         Iterator<OntClass> iter = ontClass.listSubClasses(true);  //cls的直接子类
@@ -56,7 +76,11 @@ public class FileParser implements Parser {
         return subClasses;
     }
 
-
+    /**
+     * 返回一个属性的所有直接父属性
+     * @param ontProperty
+     * @return
+     */
     @Override
     public List<OntProperty> supPropsOf(OntProperty ontProperty) {
         ExtendedIterator<? extends OntProperty> iter = ontProperty.listSuperProperties(true);  //直接父属性
@@ -67,7 +91,11 @@ public class FileParser implements Parser {
         return supProps;
     }
 
-
+    /**
+     * 返回一个属性的所有直接子属性
+     * @param ontProperty
+     * @return
+     */
     @Override
     public List<OntProperty> subPropsOf(OntProperty ontProperty) {
         ExtendedIterator<? extends OntProperty> iter = ontProperty.listSubProperties(true);  //直接子属性
@@ -78,7 +106,11 @@ public class FileParser implements Parser {
         return subProps;
     }
 
-
+    /**
+     * 返回一个类所拥有的所有直接实例
+     * @param ontClass
+     * @return
+     */
     @Override
     public List<Individual> instancesOf(OntClass ontClass) {
         Iterator<? extends OntResource> iter =  ontClass.listInstances(true);  //cls的直接实例
@@ -89,7 +121,13 @@ public class FileParser implements Parser {
         return individuals;
     }
 
-
+    /**
+     * 返回一个类所拥有的属性
+     * @param ontClass
+     * @param ontModel
+     * @param percent &nbsp 此类中有多少比例的实例有这个属性才可以说这个类拥有这个属性
+     * @return
+     */
     @Override
     public List<OntProperty> propsOfCls(OntClass ontClass, OntModel ontModel, double percent) {
         int insCount = 0;  //实例计数
@@ -116,7 +154,13 @@ public class FileParser implements Parser {
         return reses;
     }
 
-
+    /**
+     * 返回一个类所拥有的数据类型属性
+     * @param ontClass
+     * @param ontModel
+     * @param percent
+     * @return
+     */
     @Override
     public List<DatatypeProperty> dpsOfCls(OntClass ontClass, OntModel ontModel, double percent) {
         List<OntProperty> props = propsOfCls(ontClass,ontModel,percent);
@@ -129,6 +173,13 @@ public class FileParser implements Parser {
         return dps;
     }
 
+    /**
+     * 返回一个属性的定义域所包含的类集
+     * @param prop
+     * @param ontModel
+     * @param percent
+     * @return
+     */
     @Override
     public List<OntClass> domainOfProp(OntProperty prop, OntModel ontModel, double percent) {
         List<OntClass> clses = new ArrayList<>();
@@ -143,6 +194,13 @@ public class FileParser implements Parser {
         return clses;
     }
 
+    /**
+     * 返回一个属性的值域所包含的类集
+     * @param op
+     * @param ontModel
+     * @param percent
+     * @return
+     */
     @Override
     public List<OntClass> rangeOfOp(ObjectProperty op, OntModel ontModel, double percent) {
         Set<OntClass> clses = new HashSet<>();
@@ -176,6 +234,26 @@ public class FileParser implements Parser {
             res.add(clsIter.next());
         }
         return res;
+    }
+
+    /**
+     * 返回一个实例所拥有的所有数据类型属性及其值
+     * @param individual
+     * @return
+     */
+    @Override
+    public Map<DatatypeProperty, String> dpValsOf(Individual individual) {
+        Map<DatatypeProperty,String> dpVals = new HashMap<>();
+        StmtIterator sIter = individual.listProperties();  //迭代实例的所有属性
+        while(sIter.hasNext()){
+            Statement stmt = sIter.nextStatement();
+            Property tp = stmt.getPredicate();
+            if(tp.hasProperty(RDF.type, OWL.DatatypeProperty)){  //当前属性是数据类型属性
+                RDFNode obj = stmt.getObject();  //TODO:注意,这里默认一个实例的一个数据类型属性只有一个取值
+                dpVals.put(individual.getOntModel().getDatatypeProperty(tp.getURI()),obj.asLiteral().toString());
+            }
+        }
+        return dpVals;
     }
 
 }
