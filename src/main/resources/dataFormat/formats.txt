@@ -1,0 +1,11 @@
+(?<result>(?<num>\d+\.?\d*)(?<unit>毫米|厘米|分米|米|十米|百米|千米|mm|cm|dm|m|dam|hm|km|公里|公尺|海里|浬|哩|英里|海浬|海哩|尺|里|丈|寸|呎|英尺|吋|英寸|in|ft|mi|nmi))
+\d+\.?\d*呎\d+\.?\d*吋
+(?<result>(?<num>\d+\.?\d*)(?<unit>克|公克|千克|吨|公吨|长吨|短吨|两|钱|斤|公斤|磅|盎司|g|kg|t|st|lt|lb|oz))
+(?<result>(?<num>\d+\.?\d*)(?<unit>米/秒|千米/秒|千米/时|公里/时|公里/秒|马赫|英里/时|英寸/秒|海里/时|节|m/s|km/s|km/h|mach|mile/h|in/s))
+(?<result>(?<num>\d+\.?\d*)(?<unit>发/分))
+(?<result>(?<num>\d+\.?\d*)(?<unit>发))
+(?<result>(?<num>\d+\.?\d*)(?<unit>人|名))
+(?<result>^[a-zA-Z0-9_-]{1,8}$)
+(?<result>^[\u4e00-\u9fa5]{1,8}$)
+(?<result>(?<year>\d{4})年((?<month>\d{1,2})月)?((?<day>\d{1,2})日)?)
+(?<result>(?<sYear>\d{4})年((?<sMonth>\d{1,2})月)?((?<sDay>\d{1,2})日)?-(?<eYear>\d{4})年((?<eMonth>\d{1,2})月)?((?<eDay>\d{1,2})日)?)
