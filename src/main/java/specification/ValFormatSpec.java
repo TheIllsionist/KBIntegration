@@ -64,11 +64,7 @@ public class ValFormatSpec {
      */
     private String formatOfVal(String value) throws Exception{
         isValLegal(value);    //属性值合法性检查
-        for(Map.Entry<String,Integer> entry : formatMap.entrySet()){ //是否匹配基本格式
-            if(value.matches(entry.getKey()))
-                return entry.getKey();
-        }
-        for(Map.Entry<String,Integer> entry : formatMap.entrySet()){  //是否匹配组合格式
+        for(Map.Entry<String,Integer> entry : formatMap.entrySet()){ //遍历取值格式
             if(value.matches(entry.getKey()))
                 return entry.getKey();
         }
@@ -122,9 +118,16 @@ public class ValFormatSpec {
             String unit = matcher.group("unit");
             stdNum += num * getFactor(basicId,unit);
         }
-        return stdNum;
+        return (double)Math.round(stdNum * 100)/100; //四舍五入,两位小数
     }
 
+
+    /**
+     * 根据取值格式和单位,返回将当前值转为对应的标准单位值的转换因子
+     * @param basicId
+     * @param unit
+     * @return
+     */
     private double getFactor(int basicId,String unit){
         Map<String,Double> map = stdMap.get(basicId);
         for(Map.Entry<String,Double> entry : map.entrySet()){
@@ -133,6 +136,8 @@ public class ValFormatSpec {
         }
         return 1.0;  //找不到对应单位的转换因子,返回原值
     }
+
+
 
     /**
      * 工厂方法,根据值格式,构造该值对应的格式化值对象

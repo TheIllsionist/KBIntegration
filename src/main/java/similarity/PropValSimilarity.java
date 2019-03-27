@@ -7,8 +7,8 @@ import org.apache.jena.ontology.OntResource;
 import parser.Parser;
 import specification.FormatVal;
 import specification.ValFormatSpec;
+import utils.PropMapUtil;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,31 +28,49 @@ public class PropValSimilarity implements Similarity{
     @Autowired
     private ValFormatSpec formatSpec;
 
+    @Autowired
+    private ValSimilarity valSimilarity;
+
+    @Autowired
+    private PropMapUtil propMapUtil;
+
 
 
     @Override
-    public double similarityOf(OntResource res1, OntResource res2) throws Exception {
-        Individual ins1 = res1.asIndividual();
-        Individual ins2 = res2.asIndividual();
-        Map<DatatypeProperty,String> dpMap1 = parser.dpValsOf(ins1);
-        Map<DatatypeProperty,String> dpMap2 = parser.dpValsOf(ins2);
-        Map<DatatypeProperty,FormatVal> dmMap1 = new HashMap<>();
-        Map<DatatypeProperty,FormatVal> dmMap2 = new HashMap<>();
+    public double similarityOf(OntResource es, OntResource et) throws Exception {
+        Individual is = es.asIndividual();
+        Individual it = et.asIndividual();
+        Map<DatatypeProperty,String> isDpMap = parser.dpValsOf(is); //is的DP属性集
+        Map<DatatypeProperty,String> itDpMap = parser.dpValsOf(it); //it的DP属性集
+        Map<DatatypeProperty,FormatVal> isDeMap = new HashMap<>();  //is的DE提取属性集
+        Map<DatatypeProperty,FormatVal> itDeMap = new HashMap<>();  //it的DE提取属性集
+
 
     }
 
-    private Map<DatatypeProperty,FormatVal> extractDm(Map<DatatypeProperty,String> dpMap){
-
+    /**
+     * 根据知识库知识表示规范中的属性值取值格式从DP属性值中提取DE属性集
+     * 如果出现没有任何匹配格式的属性值,打印到控制台上
+     * @param dpMap
+     * @return
+     */
+    private Map<DatatypeProperty,FormatVal> extractDeMap(Individual ins, Map<DatatypeProperty,String> dpMap){
+        Map<DatatypeProperty,FormatVal> deMap = new HashMap<>();
+        for(Map.Entry<DatatypeProperty,String> entry : dpMap.entrySet()){
+            FormatVal tVal = null;
+            try{
+                tVal = formatSpec.formatVal(entry.getValue());
+                deMap.put(entry.getKey(),tVal);
+            }catch (Exception e){
+                System.out.println("   ERROR : 没有对应于实例 " + ins.getURI() + " 的属性 "
+                        + entry.getKey().getURI() + " 的属性值 " + entry.getValue() + " 的匹配格式.");
+            }
+        }
+        return deMap;
     }
 
-    private Map<DatatypeProperty,List<DatatypeProperty>> propMapping(){
-
+    private Map<DatatypeProperty,DatatypeProperty> propMapping(Map<DatatypeProperty,FormatVal> isDeMap,Map<DatatypeProperty,FormatVal> itDeMap){
+        return propMapUtil.mapping(isDeMap,itDeMap);
     }
-
-    private double simOfNum(Double sNum,Double tNum){
-
-    }
-
-    private double
 
 }
