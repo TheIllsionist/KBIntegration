@@ -23,29 +23,43 @@ import java.util.Map;
 public class PropValSimilarity implements Similarity{
 
     @Autowired
-    private Parser parser;
+    private Parser parser;  //知识库解析器
 
     @Autowired
-    private ValFormatSpec formatSpec;
+    private ValFormatSpec formatSpec;  //DP取值格式规范
 
     @Autowired
-    private ValSimilarity valSimilarity;
+    private ValSimilarity valSimilarity;  //区分性属性值相似度计算
 
     @Autowired
-    private PropMapUtil propMapUtil;
+    private PropMapUtil propMapUtil;   //属性映射的工具
 
-
-
+    /**
+     * 计算实例间相似度
+     * @param es
+     * @param et
+     * @return
+     * @throws Exception
+     */
     @Override
     public double similarityOf(OntResource es, OntResource et) throws Exception {
         Individual is = es.asIndividual();
         Individual it = et.asIndividual();
         Map<DatatypeProperty,String> isDpMap = parser.dpValsOf(is); //is的DP属性集
         Map<DatatypeProperty,String> itDpMap = parser.dpValsOf(it); //it的DP属性集
-        Map<DatatypeProperty,FormatVal> isDeMap = new HashMap<>();  //is的DE提取属性集
-        Map<DatatypeProperty,FormatVal> itDeMap = new HashMap<>();  //it的DE提取属性集
+        Map<DatatypeProperty,FormatVal> isDeMap = extractDeMap(is,isDpMap);  //is的DE提取属性集
+        Map<DatatypeProperty,FormatVal> itDeMap = extractDeMap(it,itDpMap);  //it的DE提取属性集
+        Map<DatatypeProperty,DatatypeProperty> propMap = propMapping(isDeMap,itDeMap);  //属性映射结果
+        for(Map.Entry<DatatypeProperty,DatatypeProperty> propPair : propMap.entrySet()){  //逐对比较
+            FormatVal val1 = isDeMap.get(propPair.getKey());
+            FormatVal val2 = isDeMap.get(propPair.getValue());
+            //计算两个值之间的相似度
 
+            //各相似度值加权或根据阈值转化为投票
 
+        }
+        //加权方法返回总体相似度
+        //投票方法返回0或1
     }
 
     /**
@@ -69,6 +83,12 @@ public class PropValSimilarity implements Similarity{
         return deMap;
     }
 
+    /**
+     * 进行属性映射
+     * @param isDeMap
+     * @param itDeMap
+     * @return
+     */
     private Map<DatatypeProperty,DatatypeProperty> propMapping(Map<DatatypeProperty,FormatVal> isDeMap,Map<DatatypeProperty,FormatVal> itDeMap){
         return propMapUtil.mapping(isDeMap,itDeMap);
     }
