@@ -24,5 +24,14 @@ public class ValSimilarity {
         return 0.0;
     }
 
+    private double numSimilarity(double n1,double n2){
+
+    }
+
+    private double dateSimilarity(double d1,double d2){
+
+    }
+
+
 
 }
