@@ -60,6 +60,7 @@ public class PropValSimilarity implements Similarity{
         }
         //加权方法返回总体相似度
         //投票方法返回0或1
+        return 0.0;
     }
 
     /**

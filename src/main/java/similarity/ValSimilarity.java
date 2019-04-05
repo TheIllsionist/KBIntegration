@@ -25,11 +25,11 @@ public class ValSimilarity {
     }
 
     private double numSimilarity(double n1,double n2){
-
+        return 0.0;
     }
 
     private double dateSimilarity(double d1,double d2){
-
+        return 0.0;
     }
 
 

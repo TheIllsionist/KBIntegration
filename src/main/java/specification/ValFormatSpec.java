@@ -138,7 +138,6 @@ public class ValFormatSpec {
     }
 
 
-
     /**
      * 工厂方法,根据值格式,构造该值对应的格式化值对象
      * 若值不合法或者没有该值对应的格式,抛出异常
@@ -147,17 +146,39 @@ public class ValFormatSpec {
      * @throws Exception
      */
     public FormatVal formatVal(String val) throws Exception{
-        String regex = formatOfVal(val);
-        int id = formatMap.get(regex);
-        String basicRegex = combineRel.containsKey(id) ? combineRel.get(id) : regex;  //若该值的格式为组合格式,找到它对应的基本格式
+        String regex = formatOfVal(val);   //初步取值格式获取,可能是组合格式
+        int id = formatMap.get(regex);   //初步取值格式标识
+        String basicRegex = combineRel.containsKey(id) ? combineRel.get(id) : regex;  //对于组合格式,找到它对应的基本格式
         int basicId = formatMap.get(basicRegex);
         FormatVal formatVal = new FormatVal(val);
-        formatVal.setFormatID(basicId);  //一定是基本格式ID
+        formatVal.setFormatID(basicId);  //格式ID设为基本格式ID
         Pattern pattern = Pattern.compile(basicRegex);
-        if(basicId == 10){    //日期型
-            formatVal.setDates(datesOf(val,pattern));
-        }else if(basicId >= 1 && basicId <= 7){  //带单位的数值
-            formatVal.setStdNum(stdValOf(val,basicId,pattern));
+        if(basicId == 8 || basicId == 9){    //日期型格式
+            if(id == 17){  //日期范围
+                val = val.replace('~','-');
+                int[] fDate = datesOf(val.substring(0,val.indexOf("-")),pattern);
+                int[] tDate = datesOf(val.substring(val.indexOf("-") + 1),pattern);
+                formatVal.setfDates(fDate);
+                formatVal.settDates(tDate);
+            }else{  //单纯日期
+                formatVal.setfDates(datesOf(val,pattern));
+            }
+        }else if(basicId >= 1 && basicId <= 7){  //带单位数值型格式
+            if(id > 12&& id <= 16){  //范围型
+                val = val.replace('~','-');
+                String spVals[] = val.split("-");
+                Matcher tmpMatcher = pattern.matcher(spVals[1]);
+                tmpMatcher.find();
+                String unit = tmpMatcher.group("unit");
+                char c = spVals[0].charAt(spVals[0].length() - 1);
+                if(c >= '0' && c <= '9'){
+                    spVals[0] = spVals[0] + unit;
+                }
+                formatVal.setfNum(stdValOf(spVals[0],basicId,pattern));
+                formatVal.settNum(stdValOf(spVals[1],basicId,pattern));
+            }else{ //非范围型
+                formatVal.setfNum(stdValOf(val,basicId,pattern));
+            }
         }else if(basicId == 8){ //字母,数字,中划线和下划线组成的串
 
         }else if(basicId == 9){ //中文文本串

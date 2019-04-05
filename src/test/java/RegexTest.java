@@ -24,6 +24,10 @@ public class RegexTest {
         String val11 = "34千米/秒";
         String val12 = "34.2m/s";
         String val13 = "6.34马赫";
+        String val14 = "20.4-40.9米";
+        String val15 = "20.3米-24十米";
+        String val16 = "1993年2月3日-1994年7月3日";
+        String val17 = "1993年5月-2001年";
         FormatVal fVal1 = formatSpec.formatVal(val1);
         FormatVal fVal2 = formatSpec.formatVal(val2);
         FormatVal fVal3 = formatSpec.formatVal(val3);
@@ -37,6 +41,10 @@ public class RegexTest {
         FormatVal fVal11 = formatSpec.formatVal(val11);
         FormatVal fVal12 = formatSpec.formatVal(val12);
         FormatVal fVal13 = formatSpec.formatVal(val13);
+        FormatVal fVal14 = formatSpec.formatVal(val14);
+        FormatVal fVal15 = formatSpec.formatVal(val15);
+        FormatVal fVal16 = formatSpec.formatVal(val16);
+        FormatVal fVal17 = formatSpec.formatVal(val17);
         System.out.println();
     }
 
