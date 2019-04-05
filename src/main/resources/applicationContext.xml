@@ -12,16 +12,22 @@
     <bean class="specification.ValFormatSpec" id="formatSpec" scope="singleton">
         <property name="formatMap"><!-- 取值格式 -->
             <map>
+                <!-- 基本取值类型格式 -->
                 <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;毫米|厘米|分米|米|十米|百米|千米|mm|cm|dm|m|dam|hm|km|公里|公尺|海里|浬|哩|英里|海浬|海哩|尺|里|丈|寸|呎|英尺|吋|英寸|in|ft|mi|nmi))" value="1"/> <!-- 长度单位 -->
-                <entry key="\d+\.?\d*呎\d+\.?\d*吋" value="2"/>  <!-- 长度组合 -->
-                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;克|公克|千克|吨|公吨|长吨|短吨|两|钱|斤|公斤|磅|盎司|g|kg|t|st|lt|lb|oz))" value="3"/>       <!-- 重量 -->
-                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;米/秒|千米/秒|千米/时|公里/时|公里/秒|马赫|英里/时|英寸/秒|海里/时|节|m/s|km/s|km/h|mach|mile/h|in/s))" value="4"/>  <!-- 速度 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;克|公克|千克|吨|公吨|长吨|短吨|两|钱|斤|公斤|磅|盎司|g|kg|t|st|lt|lb|oz))" value="2"/>       <!-- 重量 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;米/秒|千米/秒|千米/时|公里/时|公里/秒|马赫|英里/时|英寸/秒|海里/时|节|m/s|km/s|km/h|mach|mile/h|in/s))" value="3"/>  <!-- 速度 -->
+                <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;平方米|平方厘米|平方分米|平方千米|平方公里|公顷|ha|公亩|are|英亩|acre|平方英里|sq\.mi|平方英尺|sq\.ft|平方英寸|sq\.in))" value="4"/> <!-- 面积单位 -->
                 <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;发/分))" value="5"/> <!-- 射速 -->
                 <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;发))" value="6"/>    <!-- 容弹量 -->
                 <entry key="(?&lt;result&gt;(?&lt;num&gt;\d+\.?\d*)(?&lt;unit&gt;人|名))" value="7"/>    <!-- 编制 -->
-                <entry key="(?&lt;result&gt;^[a-zA-Z0-9_-]{1,8}$)" value="8"/>         <!-- 由字母,数字,中划线,下划线组成的串 -->
-                <entry key="(?&lt;result&gt;^[\u4e00-\u9fa5]{1,8}$)" value="9"/>       <!-- 由中文字符组成的串 -->
-                <entry key="(?&lt;result&gt;(?&lt;year&gt;\d{4})年((?&lt;month&gt;\d{1,2})月)?((?&lt;day&gt;\d{1,2})日)?)" value="10"/>  <!-- 日期,初步测试 -->
+                <entry key="(?&lt;result&gt;(?&lt;year&gt;\d{4})年((?&lt;month&gt;\d{1,2})月)?((?&lt;day&gt;\d{1,2})日)?)" value="8"/>  <!-- 日期型格式1 -->
+                <entry key="(?&lt;result&gt;(?&lt;year&gt;\d{4})-(?&lt;month&gt;\d{1,2})(-(?&lt;day&gt;\d{1,2}))?)" value="9"/> <!-- 日期型格式2 -->
+                <entry key="(?&lt;result&gt;^[a-zA-Z0-9_-]{1,8}$)" value="10"/>         <!-- 由字母,数字,中划线,下划线组成的串 -->
+                <entry key="(?&lt;result&gt;^[\u4e00-\u9fa5]{1,8}$)" value="11"/>       <!-- 由中文字符组成的串 -->
+                <!-- 组合取值类型格式 -->
+                <entry key="\d+\.?\d*呎\d+\.?\d*吋" value="2"/>  <!-- 长度组合 -->
+                <entry key="" value="" />  <!-- 带单位的数值范围格式1 -->
+                <entry key="" value="" />  <!-- 带单位的数值范围格式2 -->
                 <entry key="(?&lt;result&gt;(?&lt;sYear&gt;\d{4})年((?&lt;sMonth&gt;\d{1,2})月)?((?&lt;sDay&gt;\d{1,2})日)?-(?&lt;eYear&gt;\d{4})年((?&lt;eMonth&gt;\d{1,2})月)?((?&lt;eDay&gt;\d{1,2})日)?)" value="11"/>  <!-- 日期范围 -->
             </map>
         </property>
