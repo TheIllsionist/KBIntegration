@@ -2,7 +2,7 @@ package utils;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.springframework.beans.factory.annotation.Autowired;
-import similarity.ValSimilarity;
+import similarity.MyValSimilarity;
 import specification.FormatVal;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class PropMapUtil {
     private double overlapThreshold;  //属性取值重叠程度阈值,高于此阈值则认为两个属性是映射属性
 
     @Autowired
-    private ValSimilarity valSimilarity;
+    private MyValSimilarity valSimilarity;
 
     /**
      * 给定两个属性集,寻找这两个属性集之间的属性映射
@@ -30,7 +30,7 @@ public class PropMapUtil {
      * @param itDeMap &nbsp 目标库实例的提取属性集
      * @return
      */
-    public Map<DatatypeProperty,DatatypeProperty> mapping(Map<DatatypeProperty, FormatVal> isDeMap, Map<DatatypeProperty, FormatVal> itDeMap){
+    public Map<DatatypeProperty,DatatypeProperty> mapping(Map<DatatypeProperty, FormatVal> isDeMap, Map<DatatypeProperty, FormatVal> itDeMap) throws Exception{
         Map<DatatypeProperty,DatatypeProperty> mapping = new HashMap<>();
         if(isDeMap == null || isDeMap.size() == 0 || itDeMap == null || itDeMap.size() == 0)
             return mapping;

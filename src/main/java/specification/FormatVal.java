@@ -45,6 +45,7 @@ public class FormatVal {
     public void setfDates(int[] fDates){
         this.fDates = fDates;
     }
+
     /**
      * 设置截止日期
      * @param tDates
@@ -68,6 +69,7 @@ public class FormatVal {
     public void setfNum(double fNum){
         this.fNum = fNum;
     }
+
     /**
      * 设置数值上限
      * @param tNum
@@ -86,35 +88,62 @@ public class FormatVal {
 
     /**
      * 判断是否是字母和数字组成的短文本
+     * TODO:注意这里写死了,后面极其有可能要改
      * @return
      */
     public boolean isLetterStr(){
-        return formatID == 10;         //TODO:注意这里写死了,后面极其有可能要改
+        return formatID == 10;
     }
 
     /**
      * 判断是否是文字短文本
+     * TODO:注意这里写死了,后面极其有可能要改
      * @return
      */
     public boolean isText(){
-        return formatID == 11;       //TODO:注意这里写死了,后面极其有可能要改
+        return formatID == 11;
     }
 
     /**
-     * 判断该值是否是带单位的数值
+     * 判断该值是否是带单位的数值,包括数值范围型
+     * TODO:注意这里写死了,后面极其有可能要改
      * @return
      */
-    public boolean isUnitNum(){
-        return formatID >= 1 && formatID <= 7;  //TODO:注意这里写死了,后面极其有可能要改
+    public boolean isNum(){
+        return formatID >= 1 && formatID <= 7;
     }
 
     /**
-     * 判断该值是否是日期型
+     * 判断该值是否是带单位范围型数值
+     * TODO:注意这里写死了,后面极其有可能要改
+     * @return
+     */
+    public boolean isNumRange(){
+        if(formatID >= 1 && formatID <= 7 && this.tNum > 0.0)
+            return true;
+        return false;
+    }
+
+    /**
+     * 判断该值是否是日期型,包括日期范围型
+     * TODO:注意这里写死了,后面极其有可能要改
      * @return
      */
     public boolean isDate(){
-        return formatID == 8 || formatID == 9;  //TODO:注意这里写死了,后面极其有可能要改
+        return (formatID == 8 || formatID == 9);
     }
+
+    /**
+     * 判断该值是否为日期范围型
+     * TODO:注意这里写死了,后面极其有可能要改
+     * @return
+     */
+    public boolean isDateRange(){
+        if((formatID == 8 || formatID == 9) && this.tDates != null)
+            return true;
+        return false;
+    }
+
 
     /**
      * 返回原值
@@ -123,5 +152,6 @@ public class FormatVal {
     public String getOriginal(){
         return original;
     }
+
 
 }

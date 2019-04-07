@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by The Illsionist on 2019/3/9.
  *
  * 实体名称相似度计算器,支持 加权模式 和 投票模式
  * 1.加权模式：计算多种字符串相似度,最后加权求和作为名称相似度
  * 2.投票模式：给定多种字符串相似度和阈值,最后满足投票条件的认为匹配
- *
  */
 @Component
 //@Scope

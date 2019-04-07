@@ -14,7 +14,7 @@ import java.util.Set;
  * 虚拟文档相似度计算器
  * TODO:如果主要依靠区分性属性值进行相似度计算,那么虚拟文档相似度计算器可能用不上,当前计算器未经过测试
  */
-public class VDocSimilarity implements Similarity{
+public class VDocSimilarity implements Similarity {
 
     //两个知识库
     private OntModel ks = null;  //源本体

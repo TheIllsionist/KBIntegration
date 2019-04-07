@@ -15,5 +15,5 @@ public interface ValSimilarity {
      * @param v2
      * @return
      */
-    double similarityOf(FormatVal v1,FormatVal v2);
+    double similarityOf(FormatVal v1,FormatVal v2) throws Exception;
 }
