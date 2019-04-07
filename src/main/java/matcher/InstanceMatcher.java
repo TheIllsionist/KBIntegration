@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Created by The Illsionist on 2019/3/8.
  * 实例匹配器接口
- * 给定两个知识库ks和t,输出两个知识库之间的实例匹配结果集
+ * 给定两个知识库ks和kt,输出两个知识库之间的实例匹配结果集
  */
 public interface InstanceMatcher {
 
@@ -17,6 +17,6 @@ public interface InstanceMatcher {
      * @param kt
      * @return
      */
-    Map<Individual,Map<Individual,Double>> insAlign(OntModel ks, OntModel kt);
+    Map<Individual,Individual> insAlign(OntModel ks, OntModel kt) throws Exception;
 
 }

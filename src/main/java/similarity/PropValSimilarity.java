@@ -1,16 +1,15 @@
 package similarity;
 
+import org.simmetrics.metrics.StringMetrics;
+import org.springframework.stereotype.Component;
 import specification.FormatVal;
 
 /**
- *
  * 自定义值相似度计算器
  * 计算两个属性值之间的相似度,支持数值型,带单位的数值型,日期型,日期范围型,字母数字短文本,中文短文本
  */
-public class MyValSimilarity implements ValSimilarity{
-
-    private double numThreshold;   //数值相似度阈值
-    private double textThreshold;  //文本相似度阈值
+@Component
+public class PropValSimilarity implements ValSimilarity{
 
     /**
      * 计算两个格式化值之间的相似度
@@ -22,7 +21,8 @@ public class MyValSimilarity implements ValSimilarity{
     public double similarityOf(FormatVal v1,FormatVal v2) throws Exception{
         if(!v1.sameFormatWith(v2))  //检查格式是否相同
             throw new Exception("ERROR : 值 \"" + v1.getOriginal() + "\" 与值 \"" + v2.getOriginal() + " \"之间格式不同,无法计算相似度!");
-        if(v1.isDate()){  //两个日期型(可能是范围型比较)
+        double resSim = 0.0;
+        if(v1.isDate()){  //两个日期型(可能是范围型)
             boolean isMatch = false;
             if(!v1.isDateRange() && !v2.isDateRange()){  //两个都不是范围型
                 isMatch = match2Date(v1,v2);
@@ -31,22 +31,20 @@ public class MyValSimilarity implements ValSimilarity{
             }else{
                 isMatch = matchRangeAndDate(v1,v2);
             }
-            return isMatch ? 1.0 : 0.0;  //匹配则相似度值为1.0,不匹配相似度为0.0
-        }else if(v1.isNum()){
-            double sim = -1.0;
+            resSim = isMatch ? 1.0 : 0.0;  //匹配则相似度值为1.0,不匹配相似度为0.0
+        }else if(v1.isNum()){  //两个带单位数值型(可能是范围型)
             if(!v1.isNumRange() && !v2.isNumRange()){
-                sim = sim2Num(v1,v2);
+                resSim = sim2Num(v1,v2);
             }else if(v1.isNumRange() && v2.isNumRange()){
-                sim = sim2NumRange(v1,v2);
+                resSim = sim2NumRange(v1,v2);
             }else{
-                sim = matchRangeAndNum(v1,v2) ? 1.0 : 0.0;
+                resSim = matchRangeAndNum(v1,v2) ? 1.0 : 0.0;
             }
-            return sim;
-        }else if(v1.isLetterStr()){
-            return 0.0;
-        }else{
-            return 0.0;
+        }else{   //两个数字字母短字符串或两个中文字符串
+            //当前是基于编辑距离计算两个字符串之间的相似度
+            resSim = StringMetrics.levenshtein().compare(v1.getOriginal(),v2.getOriginal());
         }
+        return resSim;
     }
 
     /**

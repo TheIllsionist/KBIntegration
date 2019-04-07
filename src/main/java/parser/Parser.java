@@ -3,6 +3,7 @@ package parser;
 import org.apache.jena.ontology.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by The Illsionist on 2019/3/8.
@@ -63,6 +64,13 @@ public interface Parser {
      * @return
      */
     List<Individual> instancesOf(OntClass ontClass);
+
+    /**
+     * 返回一个知识库中的所有实例
+     * @param ontModel
+     * @return
+     */
+    Map<String,Individual> instancesOf(OntModel ontModel);
 
 
     /**

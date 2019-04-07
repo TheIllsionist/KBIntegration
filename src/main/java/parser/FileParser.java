@@ -13,7 +13,7 @@ import java.util.*;
  * Created by The Illsionist on 2019/3/8.
  * 此类中的方法都是无状态方法
  */
-@Component("fileParser")
+@Component
 public class FileParser implements Parser {
 
     /**
@@ -119,6 +119,22 @@ public class FileParser implements Parser {
             individuals.add(iter.next().asIndividual());
         }
         return individuals;
+    }
+
+    /**
+     * 返回一个知识库中的所有实例
+     * @param ontModel
+     * @return
+     */
+    @Override
+    public Map<String,Individual> instancesOf(OntModel ontModel) {
+        Map<String,Individual> results = new HashMap<>();
+        ExtendedIterator<Individual> inses = ontModel.listIndividuals();
+        while(inses.hasNext()){
+            Individual ins = inses.next();
+            results.put(ins.getURI(),ins);
+        }
+        return results;
     }
 
     /**
@@ -250,7 +266,7 @@ public class FileParser implements Parser {
             Property tp = stmt.getPredicate();
             if(tp.hasProperty(RDF.type, OWL.DatatypeProperty)){  //当前属性是数据类型属性
                 RDFNode obj = stmt.getObject();  //TODO:注意,这里默认一个实例的一个数据类型属性只有一个取值
-                dpVals.put(individual.getOntModel().getDatatypeProperty(tp.getURI()),obj.asLiteral().toString());
+                dpVals.put(individual.getOntModel().getDatatypeProperty(tp.getURI()),obj.asLiteral().toString().replaceAll("\\s+",""));//剔除空白符
             }
         }
         return dpVals;

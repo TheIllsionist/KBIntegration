@@ -1,6 +1,7 @@
 package similarity;
 
 import org.apache.jena.ontology.OntResource;
+import org.springframework.beans.factory.annotation.Qualifier;
 import parser.Parser;
 import org.simmetrics.StringMetric;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,10 @@ import java.util.Map;
  * 1.加权模式：计算多种字符串相似度,最后加权求和作为名称相似度
  * 2.投票模式：给定多种字符串相似度和阈值,最后满足投票条件的认为匹配
  */
-@Component
-//@Scope
 public class NameSimilarity implements Similarity {
 
-
     private boolean isVote = false;  //true表示采用投票表决模式
+
     /**
      * 1.加权模式：配置相似度度量及其权重,要求各种权重加和必须为1
      * 2.投票表决模式：配置相似度度量和提取阈值,各种阈值加和没有要求

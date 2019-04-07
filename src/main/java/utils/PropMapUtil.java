@@ -2,7 +2,8 @@ package utils;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.springframework.beans.factory.annotation.Autowired;
-import similarity.MyValSimilarity;
+import org.springframework.stereotype.Component;
+import similarity.ValSimilarity;
 import specification.FormatVal;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,15 +15,14 @@ import java.util.TreeMap;
  * 使用信息：
  *      a.属性名
  *      b.取值格式
- *      c.属性取值的重叠程度
- *      d.属性值相似度
+ *      c.属性取值的重叠程度(暂时没用)
+ *      d.属性值相似度(在有多个属性值相似度通过的情况下,用属性名相似度高的作为映射)
  */
+@Component
 public class PropMapUtil {
 
-    private double overlapThreshold;  //属性取值重叠程度阈值,高于此阈值则认为两个属性是映射属性
-
     @Autowired
-    private MyValSimilarity valSimilarity;
+    private ValSimilarity valSimilarity;
 
     /**
      * 给定两个属性集,寻找这两个属性集之间的属性映射
@@ -48,7 +48,7 @@ public class PropMapUtil {
                     continue;  //取值格式不同的情况下,根本不能做相似度计算,跳过
                 }
             }
-            if(valSimMap.size() != 0){
+            if(valSimMap.size() != 0){  //有多个取值格式相同的属性,取值的相似度最大的那个作为映射属性
                 mapping.put(isEntry.getKey(),valSimMap.get(valSimMap.lastKey())); //TreeMap默认升序排序
             }
         }

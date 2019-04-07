@@ -4,6 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntResource;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import parser.Parser;
 import specification.FormatVal;
 import specification.ValFormatSpec;
@@ -20,7 +24,17 @@ import java.util.Map;
  *  2.可生成属性集之间的属性映射
  *  3.可基于*投票表决法*组合各属性相似度,票数可以智能选择,也支持手工指定
  */
+@Component
 public class PropInfoSimilarity implements Similarity {
+
+    @Value("coverThreshold")
+    private double coverThreshold;  //属性取值集合重叠程度阈值
+
+    @Value("numThreshold")
+    private double numThreshold;    //带单位数值相似度阈值
+
+    @Value("textThreshold")
+    private double textThreshold;   //短文本相似度阈值
 
     @Autowired
     private Parser parser;  //知识库解析器
@@ -29,13 +43,14 @@ public class PropInfoSimilarity implements Similarity {
     private ValFormatSpec formatSpec;  //DP取值格式规范
 
     @Autowired
-    private MyValSimilarity valSimilarity;  //区分性属性值相似度计算
+    private ValSimilarity valSimilarity;  //区分性属性值相似度计算工具
 
     @Autowired
     private PropMapUtil propMapUtil;   //属性映射的工具
 
     /**
      * 计算实例间相似度
+     * 采用投票表决方式
      * @param es
      * @param et
      * @return
@@ -50,17 +65,22 @@ public class PropInfoSimilarity implements Similarity {
         Map<DatatypeProperty,FormatVal> isDeMap = extractDeMap(is,isDpMap);  //is的DE提取属性集
         Map<DatatypeProperty,FormatVal> itDeMap = extractDeMap(it,itDpMap);  //it的DE提取属性集
         Map<DatatypeProperty,DatatypeProperty> propMap = propMapping(isDeMap,itDeMap);  //属性映射结果
+        double all = propMap.size();  //总票数
+        double votes = 0;             //赞成票数
         for(Map.Entry<DatatypeProperty,DatatypeProperty> propPair : propMap.entrySet()){  //逐对比较
             FormatVal val1 = isDeMap.get(propPair.getKey());
             FormatVal val2 = isDeMap.get(propPair.getValue());
             //计算两个值之间的相似度
-
-            //各相似度值加权或根据阈值转化为投票
-
+            double sim = valSimilarity.similarityOf(val1,val2);
+            //利用阈值将带单位值相似度和短文本相似度值转化为投票
+            if(val1.isNum()){
+                sim = sim >= numThreshold ? 1.0 : 0.0;
+            }else if(val1.isLetterStr() || val1.isText()){
+                sim = sim >= textThreshold ? 1.0 : 0.0;
+            }
+            votes += sim;
         }
-        //加权方法返回总体相似度
-        //投票方法返回0或1
-        return 0.0;
+        return votes/all;  //返回投票率
     }
 
     /**

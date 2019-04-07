@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- <context:component-scan base-package="matcher,parser,similarity,specification,tokenizer,utils"/> -->
+    <context:component-scan base-package="matcher,parser,similarity,specification,tokenizer,utils"/>
+    <context:property-placeholder location="classpath:thresholds/matcher.properties"/> <!-- 指明阈值配置文件的位置 -->
 
     <!-- DP属性值取值格式规范 -->
     <bean class="specification.ValFormatSpec" id="formatSpec" scope="singleton">
@@ -102,4 +104,16 @@
             </map>
         </property>
     </bean>
+
+    <!-- 名称相似度计算器 -->
+    <bean id="nameSimilarity" class="similarity.NameSimilarity">
+        <constructor-arg name="isVote" value="true"/>  <!-- 默认采用投票方式 -->
+        <property name="voteRateThreshold" value="0.5"/>  <!-- 2票里面只要有1票赞成即投出 -->
+    </bean>
+
+    <!-- 结果评估器 -->
+    <bean id="evaluator" class="evaluation.Evaluator">
+
+    </bean>
+
 </beans>
