@@ -28,8 +28,11 @@ public class MainProcess {
 //        nameSimConf.put(StringMetrics.levenshtein(),0.78);  //编辑距离相似度要求为0.77
 //        nameSimConf.put(StringMetrics.jaroWinkler(),0.85);  //jaroWinkler相似度要求0.85
 //        nameSim.setMetricConf(nameSimConf);
-        String ksPath = "G:\\ExperimentSpace\\wkjb.owl";
-        String ktPath = "G:\\ExperimentSpace\\wgbq.owl";
+        String ksPath = "G:\\ExperimentSpace\\wkjb.owl";  //源知识库路径
+        String ktPath = "G:\\ExperimentSpace\\wgbq.owl";  //目标知识库路径
+        String forceRes = "G:\\ExperimentSpace\\noNameRes.txt";  //暴力匹配结果
+        String nameRes = "G:\\ExperimentSpace\\nameRes.txt";    //使用了名称筛选的结果
+        String nameStruRes = "G:\\ExperimentSpace\\nameStruRes.txt";  //使用了名称和结构信息的结果
         OntModel ks = null;
         OntModel kt = null;
         //载入源知识库和目标知识库
@@ -44,8 +47,8 @@ public class MainProcess {
             e.printStackTrace();
         }
         InstanceMatcher matcher = (InstanceMatcher)ioc.getBean("propInfoMatcher"); //得到基于区分性属性的匹配器
-        OntClass hkS = ks.getOntClass("http://kse.seu.edu.cn/wkjb#航空母舰");
-        OntClass hkT = kt.getOntClass("http://kse.seu.edu.cn/wgbq#航空母舰");
+        OntClass hkS = ks.getOntClass("http://kse.seu.edu.cn/wkjb#航空母舰");  //源知识库哪种类别
+        OntClass hkT = kt.getOntClass("http://kse.seu.edu.cn/wgbq#航空母舰");  //目标知识库哪种类别
         Map<String,Individual> ises = parser.instancesOf(hkS);
         Map<String,Individual> ites = parser.instancesOf(hkT);
         Map<Individual,Individual> pairM = matcher.insAlign(ises,ites);  //得到匹配结果
