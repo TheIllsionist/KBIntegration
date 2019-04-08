@@ -33,6 +33,7 @@ public class RegexTest {
         String val20 = "34km/h-35m/s";
         String val21 = "4kg-34t";
         String val22 = "1993年2月3日~1994年7月3日";
+        String val23 = "5600海里/13节";
         FormatVal fVal1 = formatSpec.formatVal(val1);
         FormatVal fVal2 = formatSpec.formatVal(val2);
         FormatVal fVal3 = formatSpec.formatVal(val3);
@@ -55,6 +56,7 @@ public class RegexTest {
         FormatVal fVal20 = formatSpec.formatVal(val20);
         FormatVal fVal21 = formatSpec.formatVal(val21);
         FormatVal fVal22 = formatSpec.formatVal(val22);
+        FormatVal fVal23 = formatSpec.formatVal(val23);
         System.out.println();
     }
 

@@ -12,14 +12,11 @@ import java.util.Map;
 /**
  * Created by The Illsionist on 2019/3/9.
  */
-@Component
 public class VDocTFUtil {
 
-    @Autowired
     private Tokenizer tokenizer;  //分词工具
-    @Autowired
-    private Parser parser;  //信息抽取器
 
+    private Parser parser;  //信息抽取器
 
     /**
      * 获取某类虚拟文档中的TF信息,根据信息获取的配置,可能包含该资源的本地信息和周边信息

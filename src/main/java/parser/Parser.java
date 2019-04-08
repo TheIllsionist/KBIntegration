@@ -63,7 +63,7 @@ public interface Parser {
      * @param ontClass
      * @return
      */
-    List<Individual> instancesOf(OntClass ontClass);
+    Map<String,Individual> instancesOf(OntClass ontClass);
 
     /**
      * 返回一个知识库中的所有实例

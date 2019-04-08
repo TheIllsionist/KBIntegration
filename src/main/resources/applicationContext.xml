@@ -4,7 +4,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="matcher,parser,similarity,specification,tokenizer,utils"/>
+    <context:component-scan base-package="matcher,parser,similarity,specification,utils"/>
     <context:property-placeholder location="classpath:thresholds/matcher.properties"/> <!-- 指明阈值配置文件的位置 -->
 
     <!-- DP属性值取值格式规范 -->
@@ -30,6 +30,7 @@
                 <!-- 组合取值类型格式 -->
                 <entry key="\d+\.?\d*呎\d+\.?\d*吋" value="12"/>  <!-- 长度组合 -->
                 <entry key="\d{4}年(\d{1,2}月)?(\d{1,2}日)?(-|~)\d{4}年(\d{1,2}月)?(\d{1,2}日)?" value="17"/>  <!-- 日期范围组合格式1 -->
+                <entry key="(?&lt;result&gt;(?&lt;len&gt;\d+)(海里|浬|海浬|海哩)/(?&lt;sp&gt;\d+)节)" value="18"/>   <!-- 续航距离的特殊单位 -->
             </map>
         </property>
         <property name="combineRel"> <!--基本格式与组合格式之间的组合关系-->
@@ -109,11 +110,6 @@
     <bean id="nameSimilarity" class="similarity.NameSimilarity">
         <constructor-arg name="isVote" value="true"/>  <!-- 默认采用投票方式 -->
         <property name="voteRateThreshold" value="0.5"/>  <!-- 2票里面只要有1票赞成即投出 -->
-    </bean>
-
-    <!-- 结果评估器 -->
-    <bean id="evaluator" class="evaluation.Evaluator">
-
     </bean>
 
 </beans>

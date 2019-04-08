@@ -27,13 +27,13 @@ import java.util.Map;
 @Component
 public class PropInfoSimilarity implements Similarity {
 
-    @Value("coverThreshold")
+    @Value("${coverThreshold}")
     private double coverThreshold;  //属性取值集合重叠程度阈值
 
-    @Value("numThreshold")
+    @Value("${numThreshold}")
     private double numThreshold;    //带单位数值相似度阈值
 
-    @Value("textThreshold")
+    @Value("${textThreshold}")
     private double textThreshold;   //短文本相似度阈值
 
     @Autowired
@@ -65,20 +65,23 @@ public class PropInfoSimilarity implements Similarity {
         Map<DatatypeProperty,FormatVal> isDeMap = extractDeMap(is,isDpMap);  //is的DE提取属性集
         Map<DatatypeProperty,FormatVal> itDeMap = extractDeMap(it,itDpMap);  //it的DE提取属性集
         Map<DatatypeProperty,DatatypeProperty> propMap = propMapping(isDeMap,itDeMap);  //属性映射结果
-        double all = propMap.size();  //总票数
-        double votes = 0;             //赞成票数
+        double all = 0;         //总票数
+        double votes = 0;       //赞成票数
         for(Map.Entry<DatatypeProperty,DatatypeProperty> propPair : propMap.entrySet()){  //逐对比较
-            FormatVal val1 = isDeMap.get(propPair.getKey());
-            FormatVal val2 = isDeMap.get(propPair.getValue());
-            //计算两个值之间的相似度
-            double sim = valSimilarity.similarityOf(val1,val2);
-            //利用阈值将带单位值相似度和短文本相似度值转化为投票
-            if(val1.isNum()){
-                sim = sim >= numThreshold ? 1.0 : 0.0;
-            }else if(val1.isLetterStr() || val1.isText()){
-                sim = sim >= textThreshold ? 1.0 : 0.0;
+            FormatVal val1 = formatSpec.formatVal(isDpMap.get(propPair.getKey()));
+            FormatVal val2 = formatSpec.formatVal(itDpMap.get(propPair.getValue()));
+            if(val1.sameFormatWith(val2)){  //格式一样此对映射属性才有效
+                all++;  //总票数自增
+                //计算两个值之间的相似度
+                double sim = valSimilarity.similarityOf(val1,val2);  //时间型等sim自动为1.0或0.0
+                //利用阈值将相似度值转化为投票
+                if(val1.isNum()){    //带单位值
+                    sim = sim >= numThreshold ? 1.0 : 0.0;
+                }else if(val1.isLetterStr() || val1.isText()){  //短文本
+                    sim = sim >= textThreshold ? 1.0 : 0.0;
+                }
+                votes += sim;
             }
-            votes += sim;
         }
         return votes/all;  //返回投票率
     }

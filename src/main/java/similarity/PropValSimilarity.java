@@ -13,6 +13,7 @@ public class PropValSimilarity implements ValSimilarity{
 
     /**
      * 计算两个格式化值之间的相似度
+     * 在计算之前,已经判断过两个格式化值的格式是否相同了
      * @param v1
      * @param v2
      * @return
@@ -40,9 +41,13 @@ public class PropValSimilarity implements ValSimilarity{
             }else{
                 resSim = matchRangeAndNum(v1,v2) ? 1.0 : 0.0;
             }
-        }else{   //两个数字字母短字符串或两个中文字符串
+        }else if(v1.isLetterStr() || v1.isText()){   //两个数字字母短字符串或两个中文字符串
             //当前是基于编辑距离计算两个字符串之间的相似度
             resSim = StringMetrics.levenshtein().compare(v1.getOriginal(),v2.getOriginal());
+        }else if(v1.getFormatID() == 18){  //续航距离特殊单位
+            String str1 = v1.getOriginal();
+            String str2 = v2.getOriginal();
+            resSim = str1.equals(str2) ? 1.0 : 0.0;  //两个串相等则匹配
         }
         return resSim;
     }

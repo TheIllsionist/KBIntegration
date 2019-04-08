@@ -2,6 +2,7 @@ package evaluation;
 
 import org.apache.jena.ontology.Individual;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,6 +14,7 @@ import java.util.Map;
  * 基于区分性属性信息进行实例匹配的评估器
  * 该评估器计算 精确率和召回率
  */
+@Component
 public class Evaluator {
 
     @Value("goldenEggPath")

@@ -1,0 +1,28 @@
+wkjb:AIM-4导弹	wgbq:aim_4
+wkjb:AIM-7麻雀导弹	wgbq:sparrow	
+wkjb:AIM-9响尾蛇导弹	wgbq:sidewinder
+wkjb:AIM-54不死鸟导弹	wgbq:aim54_phenix
+wkjb:AIM-120先进中程空对空导弹
+wkjb:火闪导弹
+wkjb:天闪空对空导弹
+wkjb:AIM-132先进短程空对空导弹
+wkjb:AA-2导弹
+wkjb:R-60导弹
+wkjb:Vympel_R-33
+wkjb:R-27导弹
+wkjb:R-73导弹
+wkjb:AA-12导弹
+wkjb:AA.20空对空导弹
+wkjb:魔术空对空导弹
+wkjb:云母飞弹
+wkjb:阿斯派德导弹
+wkjb:AAM-4导弹
+wkjb:天剑一型导弹
+wkjb:天剑二型导弹
+wkjb:霹雳-1导弹
+wkjb:霹雳-2导弹
+wkjb:霹雳-5
+wkjb:霹雳-8
+wkjb:霹雳-9
+wkjb:霹雳-12导弹
+wkjb:流星导弹

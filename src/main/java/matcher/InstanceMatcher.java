@@ -13,10 +13,10 @@ public interface InstanceMatcher {
 
     /**
      * 匹配两个知识库中的实例
-     * @param ks
-     * @param kt
+     * @param ises
+     * @param ites
      * @return
      */
-    Map<Individual,Individual> insAlign(OntModel ks, OntModel kt) throws Exception;
+    Map<Individual,Individual> insAlign(Map<String,Individual> ises, Map<String,Individual> ites) throws Exception;
 
 }

@@ -112,13 +112,14 @@ public class FileParser implements Parser {
      * @return
      */
     @Override
-    public List<Individual> instancesOf(OntClass ontClass) {
+    public Map<String,Individual> instancesOf(OntClass ontClass) {
+        Map<String,Individual> inses = new HashMap<>();
         Iterator<? extends OntResource> iter =  ontClass.listInstances(true);  //cls的直接实例
-        List<Individual> individuals = new ArrayList<>();
         while(iter.hasNext()){
-            individuals.add(iter.next().asIndividual());
+            Individual ins = (Individual) iter.next();
+            inses.put(ins.getURI(),ins);
         }
-        return individuals;
+        return inses;
     }
 
     /**
@@ -266,7 +267,10 @@ public class FileParser implements Parser {
             Property tp = stmt.getPredicate();
             if(tp.hasProperty(RDF.type, OWL.DatatypeProperty)){  //当前属性是数据类型属性
                 RDFNode obj = stmt.getObject();  //TODO:注意,这里默认一个实例的一个数据类型属性只有一个取值
-                dpVals.put(individual.getOntModel().getDatatypeProperty(tp.getURI()),obj.asLiteral().toString().replaceAll("\\s+",""));//剔除空白符
+                DatatypeProperty dp = individual.getOntModel().getDatatypeProperty(tp.getURI());
+                String val = obj.asLiteral().toString();
+                val = val.replaceAll("\\s+|,|，","").replaceAll("～","~").replaceAll("浬|海浬|海哩","海里");
+                dpVals.put(dp,val);
             }
         }
         return dpVals;
