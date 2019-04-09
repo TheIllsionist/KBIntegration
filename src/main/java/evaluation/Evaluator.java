@@ -18,13 +18,13 @@ import java.util.Map;
 public class Evaluator {
 
     @Value("goldenEggPath")
-    private String goldenEggs;  //黄金数据集文件路径
+    private String goldenEggs;  //黄金数据集文件路径(Spring自动注入)
 
-    private Map<String,Individual> ises = null;  //源知识库实例集
-    private Map<String,Individual> ites = null;  //目标知识库实例集
+    private Map<String,Individual> ises = null;  //源知识库实例集(手工设置)
+    private Map<String,Individual> ites = null;  //目标知识库实例集(手工设置)
 
-    private Map<Individual,Individual> pairG = null;  //黄金数据集
-    private Map<Individual,Individual> pairF = null;  //负例数据集
+    private Map<Individual,Individual> pairG = null;  //黄金数据集(程序计算)
+    private Map<Individual,Individual> pairF = null;  //负例数据集(程序计算)
 
     private double precision;   //精确率
     private double recall;      //召回率

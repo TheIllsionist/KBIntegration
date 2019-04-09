@@ -13,7 +13,6 @@ import java.util.*;
  * Created by The Illsionist on 2019/3/8.
  * 此类中的方法都是无状态方法
  */
-@Component
 public class FileParser implements Parser {
 
     /**

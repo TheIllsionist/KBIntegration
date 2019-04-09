@@ -36,8 +36,8 @@ public class PropInfoMatcher implements InstanceMatcher{
 
     /**
      * 匹配源知识库ks和目标知识库kt中的实例
-     * @param ks
-     * @param kt
+     * @param ises
+     * @param ites
      * @return
      * @throws Exception
      */
